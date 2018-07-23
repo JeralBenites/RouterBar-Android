@@ -4,30 +4,72 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+def CONFIG = { k -> "\"${project.properties.get(k)}\"" }
+def BASE_URL = "BASE_URL"
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.benites.jeral.router_bar"
-        minSdkVersion 18
-        targetSdkVersion 28
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
+            buildConfigField "String", BASE_URL, CONFIG("server.url")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            buildConfigField "String", BASE_URL, CONFIG("server.url")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:28.0.0-alpha3'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+
+    implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:design:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+
+    //testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    testImplementation "junit:junit:$rootProject.ext.junitVersion"
+
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+    // RETROFIT https://github.com/square/retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit2"
+    //GSON https://github.com/google/gson
+    implementation "com.google.code.gson:gson:$gson"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit2"
+    //INTERCEPTOR
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3"
+    //LoadingView
+    implementation "com.wang.avi:library:$wangVersion"
+    //Mapas Google
+    implementation "com.google.android.gms:play-services-maps:$gms"
+    implementation "com.google.android.gms:play-services-location:$gms"
+    implementation "com.google.android.gms:play-services-maps:$gms"
+    //ROOM
+    implementation "android.arch.persistence.room:runtime:$roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    androidTestImplementation "android.arch.persistence.room:testing:$roomVersion"
 }

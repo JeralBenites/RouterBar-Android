@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">5dp</dimen>
+    <dimen name="Layout_Edit_text">40dp</dimen>
+
+    <dimen name="activity_ahalf_horizontal_margin">5dp</dimen>
+    <dimen name="activity_vertical_margin">10dp</dimen>
+
+
+    <dimen name="default_margin">20dp</dimen>
+    <dimen name="text_large">24sp</dimen>
+</resources>

@@ -1,3 +1,59 @@
 <resources>
     <string name="app_name">Router_Bar</string>
+
+    <!-- Login -->
+    <string name="user">Correo</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Ingresar</string>
+    <string name="register">Registrar</string>
+
+    <!-- Geo -->
+    <string name="location_updated">Location Updated: %1$s</string>
+
+    <!-- Validations -->
+    <string name="error">Error</string>
+    <string name="error_user">Error de usuario</string>
+    <string name="error_password">Error de Contraseña</string>
+
+    <!-- Register Bar -->
+    <string name="vBarName">Nombre del Bar</string>
+    <string name="vBarvAddres">Direccion del Bar</string>
+    <string name="vBarvPhone">Telefono del Bar</string>
+    <string name="vBarvWasap">Wasap del Bar</string>
+    <string name="vRegisterBar">Registrar Bar</string>
+    <string name="vDelerivery">Delivery</string>
+    <string name="v24Horas">24 Horas</string>
+    <string name="HourBase">00:00</string>
+    <string name="vLatitudeLabel">Latitude</string>
+    <string name="vLongitudeLabel">Longitude</string>
+    <string name="title_activity_maps_search">Map</string>
+    <string name="string_title_upload_progressbar_">Uploading&#8230; Wait for a while&#8230;</string>
+    <string name="string_upload_success">Se Inserto Correctamente..</string>
+    <string name="string_upload_fail">Ocurrio un Error</string>
+    <string name="string_internet_connection_warning">Verificar Conexion a Internet</string>
+    <string name="string_message_to_attach_file">Tome una foto del Bar</string>
+    <string name="string_choose_image">Select Image to Upload</string>
+    <string name="string_unable_to_pick_image">Unable to Pickup Image</string>
+    <string name="string_unable_to_load_image">Unable to Load Image</string>
+    <string name="string_reselect">Click on Image to Reselect</string>
+    <string name="vvName">Ingrese Nombre del Bar</string>
+    <string name="vvAddres">Ingrese direccion del Bar</string>
+    <string name="vLatitude">Ingrese Latitude</string>
+    <string name="vLongitud">Ingrese Longitud</string>
+    <string name="vvPhone">Ingrese Telefono</string>
+    <string name="vtHourOpen">Ingrese Hora de Abrir</string>
+    <string name="vtHourClose">Ingrese Hora de Cerrar</string>
+    <string name="vTituloOptionCamera">Seleccione una Opcion</string>
+    <string name="vPickGallery">Seleccione Foto de la Galeria</string>
+    <string name="vTakePhoto">Tomar Foto</string>
+
+    <string name="vCurrentPosition">Posicion Actual</string>
+    <string name="mensaje_gps_no_activo">Dirigite a configuraciones y activa el GPS por favor.</string>
+    <string name="google_error_conexion">Ocurrió un error al conectar Google Api Client</string>
+    <string name="selected_marker_text">Usted Seleccionó %1$s</string>
+    <string name="gps_dialog_descripcion">Es necesario que el GPS esté activado, por favor diríjase a las configuraciones y activelo.</string>
+    <string name="gps_dialog_titulo">GPS ES OBLIGATORIO</string>
+    <string name="gps_dialog_boton">Ir a Configuración</string>
+    <string name="gps_activar_mensaje_error">Es necesario activar el GPS, por favor activelo para   que el APP funcione correctamente.</string>
+
 </resources>
