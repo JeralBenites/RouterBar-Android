@@ -3,7 +3,7 @@ package com.benites.jeral.router_bar.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.support.media.ExifInterface;
+import android.media.ExifInterface;
 import android.os.Environment;
 
 import java.io.File;
@@ -69,7 +69,6 @@ public class CameraUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assert exifInterface != null;
         int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
         Matrix matrix = new Matrix();
         switch (orientation) {
