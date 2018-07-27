@@ -48,14 +48,14 @@ public class PubAdapter extends RecyclerView.Adapter<PubAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         PubEntity pubEntity = pubEntities.get(position);
-
         byte[] decodedString = Base64.decode(pubEntity.getImage(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         holder.anImageView.setImageBitmap(decodedByte);
         holder.pubNameTextView.setText(pubEntity.getName());
         holder.pubPhoneTextView.setText(pubEntity.getSocial().getPhone());
         holder.pubAddressTextView.setText(pubEntity.getAddress().getStreet());
-        holder.phoneImageView.setOnClickListener(v -> v.getContext().startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", pubEntity.getSocial().getPhone(), null))));
+        holder.phoneImageView.setOnClickListener(v ->
+                v.getContext().startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", pubEntity.getSocial().getPhone(), null))));
         holder.anImageView.setOnClickListener(v -> {
             if (clickListener != null) {
                 //clickListener.onBarClick(bar.getiCodBar());
@@ -63,7 +63,7 @@ public class PubAdapter extends RecyclerView.Adapter<PubAdapter.ViewHolder> {
         });
         holder.gpsImageView.setOnClickListener(v -> {
             if (clickListener != null) {
-                // clickListener.onGoGps(bar.getiCodBar());
+                clickListener.onGoGps(position);
             }
         });
     }

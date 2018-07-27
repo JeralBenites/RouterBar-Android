@@ -1,4 +1,4 @@
-package com.benites.jeral.router_bar.Fragments;
+package com.benites.jeral.router_bar.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

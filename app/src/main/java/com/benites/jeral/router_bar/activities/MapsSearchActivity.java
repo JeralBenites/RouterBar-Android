@@ -8,17 +8,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.benites.jeral.router_bar.R;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -52,15 +48,15 @@ import static com.benites.jeral.router_bar.util.Constants.TAG_FASTER_INTERVAL;
 import static com.benites.jeral.router_bar.util.Constants.TAG_INTERVAL;
 import static com.benites.jeral.router_bar.util.Constants.ZOOM_NORMAL;
 import static com.benites.jeral.router_bar.util.Util.PopUPLocationPermission;
+import static com.benites.jeral.router_bar.util.Util.SetMapTime;
 
-public class MapsSearchActivity extends FragmentActivity
+public class MapsSearchActivity extends BaseActivity
         implements OnMapReadyCallback,
         LocationListener,
         GoogleMap.OnMyLocationButtonClickListener {
 
     protected LocationManager locationManager;
     LatLng origin;
-    RelativeLayout MapView;
     private GoogleMap mMap;
     private Location mUltimaLocalizacion;
     private Marker mCurrentLocationMarker;
@@ -87,19 +83,12 @@ public class MapsSearchActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_search);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        ui();
+        enabledBack();
         ValidateGps();
     }
-
-    private void ui() {
-        MapView = findViewById(R.id.MapView);
-
-    }
-
 
     /**
      * Manipulates the map once available.
@@ -115,7 +104,7 @@ public class MapsSearchActivity extends FragmentActivity
         if (googleMap != null) {
             mMap = googleMap;
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
+
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
                 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -255,7 +244,7 @@ public class MapsSearchActivity extends FragmentActivity
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.getUiSettings().setMapToolbarEnabled(true);
             mMap.setBuildingsEnabled(true);
-            //SetMapTime(getApplicationContext(), mMap, null);
+            SetMapTime(getApplicationContext(), mMap, null);
         }
     }
 

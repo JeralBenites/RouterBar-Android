@@ -1,12 +1,10 @@
 package com.benites.jeral.router_bar.model;
 
-import android.arch.persistence.room.Entity;
-
-@Entity
 public class UserEntity {
     private String _id;
     private String email;
     private String password;
+    private String userName;
     private String state;
 
     public String get_id() {
@@ -33,11 +31,30 @@ public class UserEntity {
         this.password = password;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getState() {
         return state;
     }
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "_id='" + _id + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", userName='" + userName + '\'' +
+                ", state='" + state + '\'' +
+                '}';
     }
 }

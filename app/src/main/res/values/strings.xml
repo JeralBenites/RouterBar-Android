@@ -6,6 +6,9 @@
     <string name="password">Contraseña</string>
     <string name="login">Ingresar</string>
     <string name="register">Registrar</string>
+    <string name="registrarUsuario">Registrarse</string>
+    <string name="birth">Fecha Nacimiento</string>
+    <string name="usuario">Usuario</string>
 
     <!-- Geo -->
     <string name="location_updated">Location Updated: %1$s</string>
@@ -14,6 +17,7 @@
     <string name="error">Error</string>
     <string name="error_user">Error de usuario</string>
     <string name="error_password">Error de Contraseña</string>
+    <string name="error_fecha">Rellenar Fecha Nacimiento</string>
 
     <!-- Register Bar -->
     <string name="vBarName">Nombre del Bar</string>
@@ -56,4 +60,19 @@
     <string name="gps_dialog_boton">Ir a Configuración</string>
     <string name="gps_activar_mensaje_error">Es necesario activar el GPS, por favor activelo para   que el APP funcione correctamente.</string>
 
+    <string name="action_search">Search</string>
+    <string name="action_sign_out">Cerrar Sesion</string>
+    <string name="title_activity_maps_route">Map</string>
+    <string name="title_activity_main_maps">Map</string>
+
+    <string name="vTextLogaout">Seguro que Desea Cerrar la Sesion?</string>
+    <string name="vCerrarSession">Cerrar Sesion</string>
+    <string name="vTerminarVenta">Seguro que desea Relizar la Venta?</string>
+    <string name="vSeguro">Terminar Venta</string>
+    <string name="title_alert_product_Negative">Seleccione Productos!</string>
+    <string name="text_product">Tu presuepuesto seria de  S/ </string>
+    <string name="title_alert_product">Proforma de la Venta</string>
+    <string name="option1">Pedir</string>
+    <string name="vAceptar">ACEPTAR</string>
+    <string name="vCancelar">CANCELAR</string>
 </resources>

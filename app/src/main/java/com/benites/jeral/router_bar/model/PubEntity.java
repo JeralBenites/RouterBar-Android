@@ -1,19 +1,35 @@
 package com.benites.jeral.router_bar.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 
 public class PubEntity {
 
+    private String _id;
+
     private String name;
+
     private AddressEntity address;
+
     private String image;
+
     private HourEntity hour;
+
     private Boolean hora24;
+
     private Boolean delivery;
+
     private SocialEntity social;
+
     private String state;
+
     private String userRegister;
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
 
     public String getName() {
         return name;
@@ -85,5 +101,21 @@ public class PubEntity {
 
     public void setUserRegister(String userRegister) {
         this.userRegister = userRegister;
+    }
+
+    @Override
+    public String toString() {
+        return "PubEntity{" +
+                "_id='" + _id + '\'' +
+                ", name='" + name + '\'' +
+                ", address=" + address +
+                ", image='" + image + '\'' +
+                ", hour=" + hour +
+                ", hora24=" + hora24 +
+                ", delivery=" + delivery +
+                ", social=" + social +
+                ", state='" + state + '\'' +
+                ", userRegister='" + userRegister + '\'' +
+                '}';
     }
 }

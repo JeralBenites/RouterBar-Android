@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/CardLogin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin"
+        app:hintAnimationEnabled="false"
+        app:hintEnabled="false">
+
+        <EditText
+            android:id="@+id/usuarioSingUp"
+            style="@style/EditTextInput"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/Layout_Edit_text"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            android:hint="@string/usuario"
+            android:inputType="textEmailAddress"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:selectAllOnFocus="false"
+            android:textSize="12sp"
+            android:typeface="normal">
+
+            <requestFocus />
+
+        </EditText>
+
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin"
+        app:hintAnimationEnabled="false"
+        app:hintEnabled="false">
+
+        <EditText
+            android:id="@+id/emailSingUp"
+            style="@style/EditTextInput"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/Layout_Edit_text"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            android:hint="@string/user"
+            android:inputType="textEmailAddress"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:selectAllOnFocus="false"
+            android:textSize="12sp"
+            android:typeface="normal">
+
+
+        </EditText>
+
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin"
+        app:hintAnimationEnabled="false"
+        app:hintEnabled="false"
+        app:passwordToggleEnabled="true">
+
+        <EditText
+            android:id="@+id/passwordSingUp"
+            style="@style/EditTextInput"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/Layout_Edit_text"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:selectAllOnFocus="false"
+            android:textSize="12sp"
+            android:typeface="normal" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin">
+
+        <EditText
+            android:id="@+id/vDateBorn"
+            style="@style/EditTextInput"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/Layout_Edit_text"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            android:focusable="false"
+            android:hint="@string/birth"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:selectAllOnFocus="false"
+            android:textSize="12sp"
+            android:typeface="normal" />
+
+        <ImageView
+            android:id="@+id/calenderView"
+            android:layout_width="34dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_date_range_black_24dp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin">
+
+        <Button
+            android:id="@+id/signUpButton"
+            style="@style/ButtonSkyBlue"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/register"
+            android:textColor="#fff" />
+
+    </LinearLayout>
+
+</LinearLayout>

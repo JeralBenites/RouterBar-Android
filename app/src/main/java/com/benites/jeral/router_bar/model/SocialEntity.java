@@ -1,5 +1,6 @@
 package com.benites.jeral.router_bar.model;
 
+
 public class SocialEntity {
     private String facebook;
     private String twitter;

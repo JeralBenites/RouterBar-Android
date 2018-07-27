@@ -49,17 +49,6 @@ public class CameraUtils {
     }
 
     /**
-     * le baja el tamaño a la imagen.
-     */
-    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
-        float ratio = Math.min(maxImageSize / realImage.getWidth(), maxImageSize / realImage.getHeight());
-        int width = Math.round(ratio * realImage.getWidth());
-        int height = Math.round(ratio * realImage.getHeight());
-
-        return Bitmap.createScaledBitmap(realImage, width, height, filter);
-    }
-
-    /**
      * si la imagen esta rotada, o mal posicionada, este metodo lo rota de forma portrair.
      */
     public static Bitmap rotateBitmap(Bitmap bitmap, String mImageFileLocation) {
@@ -69,6 +58,7 @@ public class CameraUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        assert exifInterface != null;
         int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
         Matrix matrix = new Matrix();
         switch (orientation) {

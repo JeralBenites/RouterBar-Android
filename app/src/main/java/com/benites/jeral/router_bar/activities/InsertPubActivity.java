@@ -28,13 +28,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.benites.jeral.router_bar.Fragments.PubFragment;
 import com.benites.jeral.router_bar.R;
+import com.benites.jeral.router_bar.fragments.PubFragment;
 import com.benites.jeral.router_bar.model.AddressEntity;
 import com.benites.jeral.router_bar.model.CoordenatesEntity;
 import com.benites.jeral.router_bar.model.HourEntity;
@@ -43,7 +44,7 @@ import com.benites.jeral.router_bar.model.SocialEntity;
 import com.benites.jeral.router_bar.storage.network.ApiClass;
 import com.benites.jeral.router_bar.storage.network.ProgressRequestBody;
 import com.benites.jeral.router_bar.storage.network.RouterApi;
-import com.benites.jeral.router_bar.storage.network.entity.PubRaw;
+import com.benites.jeral.router_bar.storage.network.entity.PubEntityRaw;
 import com.benites.jeral.router_bar.util.CameraUtils;
 import com.benites.jeral.router_bar.util.MyFileProvider;
 import com.benites.jeral.router_bar.util.SnackBarHelper;
@@ -54,47 +55,39 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.benites.jeral.router_bar.storage.preferences.PreferencesHelper.getIDSession;
 import static com.benites.jeral.router_bar.util.CameraUtils.rotateBitmap;
-import static com.benites.jeral.router_bar.util.CameraUtils.scaleDown;
 import static com.benites.jeral.router_bar.util.CameraUtils.storeBitmap;
 import static com.benites.jeral.router_bar.util.Constants.REQUEST_IMAGE_CAPTURE;
 import static com.benites.jeral.router_bar.util.Constants.REQUEST_IMAGE_SELECTED;
 import static com.benites.jeral.router_bar.util.Constants.REQUEST_PERMISSIONS;
 import static com.benites.jeral.router_bar.util.Constants.TAG_INSERT_PUB_ACTIVITY;
+import static com.benites.jeral.router_bar.util.Constants.TAG_RETAINED_FRAGMENT;
+import static com.benites.jeral.router_bar.util.Util.scaleDown;
 
-public class InsertPubActivity extends BaseActivity implements View.OnKeyListener, View.OnClickListener {
+public class InsertPubActivity extends BaseActivity
+        implements View.OnKeyListener,
+        View.OnClickListener {
 
-    private static final String TAG_RETAINED_FRAGMENT = "BarFragment";
     public static double Latitude = 0.0d;
     public static double Longitud = 0.0d;
-    public static PubEntity pubEntity = new PubEntity();
-    EditText vName;
-    EditText vAddres;
-    EditText vPhone;
-    EditText vWasap;
-    TextView tHourOpen;
-    TextView tHourClose;
-    CheckBox bDelivery;
-    CheckBox d24Horas;
-    TextView dLatitude;
-    TextView dLongitude;
-    ImageView vPicture;
-    ImageView FotoImage;
-    Button btnRegisterBar;
-    View flayLoading;
-    ImageView openHourImageView;
-    ImageView closeHourImageView;
-    ImageView vMap;
-    Context mContext;
+    private PubEntity pubEntity;
+    private EditText vName, vAddres, vPhone, vWasap;
+    private TextView tHourOpen, tHourClose, dLatitude, dLongitude;
+    private CheckBox bDelivery, d24Horas;
+    private ImageView vPicture, FotoImage, openHourImageView, closeHourImageView, vMap;
+    private Button btnRegisterBar;
+    private FrameLayout flayLoading;
+    private Context mContext;
     private String photoPath;
     private PubFragment pubFragment;
+    private RelativeLayout parentView;
 
     public static void start(Context context) {
         Intent starter = new Intent(context, InsertPubActivity.class);
@@ -106,6 +99,7 @@ public class InsertPubActivity extends BaseActivity implements View.OnKeyListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_pub);
         ui();
+        enabledBack();
     }
 
     private void ui() {
@@ -125,102 +119,22 @@ public class InsertPubActivity extends BaseActivity implements View.OnKeyListene
         flayLoading = findViewById(R.id.flayLoading);
         openHourImageView = findViewById(R.id.openHourImageView);
         closeHourImageView = findViewById(R.id.closeHourImageView);
+        parentView = findViewById(R.id.parentView);
         vMap = findViewById(R.id.vMap);
-
         mContext = getApplicationContext();
-        dLatitude.setText(String.valueOf(Latitude));
-        dLongitude.setText(String.valueOf(Longitud));
+        pubEntity = new PubEntity();
         Latitude = 0.0d;
         Longitud = 0.0d;
+        dLatitude.setText(String.valueOf(Latitude));
+        dLongitude.setText(String.valueOf(Longitud));
         validateFragment();
-
-        vName.setOnKeyListener(this);
-        vAddres.setOnKeyListener(this);
-        vPhone.setOnKeyListener(this);
-        tHourOpen.setOnKeyListener(this);
-        tHourClose.setOnKeyListener(this);
-        bDelivery.setOnKeyListener(this);
-        d24Horas.setOnKeyListener(this);
-        vWasap.setOnKeyListener(this);
-        dLatitude.setOnKeyListener(this);
-        dLongitude.setOnKeyListener(this);
-        openHourImageView.setOnClickListener(this);
-        closeHourImageView.setOnClickListener(this);
-        vMap.setOnClickListener(this);
-        vPicture.setOnClickListener(this);
-        btnRegisterBar.setOnClickListener(this);
-    }
-
-    private void validateFragment() {
-        //Buscar el fragment retenido en el reinicio del activity.
-        FragmentManager fm = getSupportFragmentManager();
-        pubFragment = (PubFragment) fm.findFragmentByTag(TAG_RETAINED_FRAGMENT);
-        if (pubFragment == null) {
-            pubFragment = new PubFragment();
-            fm.beginTransaction().add(pubFragment, TAG_RETAINED_FRAGMENT).commit();
-        } else {
-            vName.setText((pubFragment.getPub().getName() != null) ? pubFragment.getPub().getName() : "");
-            vAddres.setText((pubFragment.getPub().getAddress().getStreet() != null) ? pubFragment.getPub().getAddress().getStreet() : "");
-            vPhone.setText((pubFragment.getPub().getSocial().getPhone() != null) ? pubFragment.getPub().getSocial().getPhone() : "");
-            tHourOpen.setText((pubFragment.getPub().getHour().getHourOpen() != null) ? pubFragment.getPub().getHour().getHourOpen() : "");
-            tHourClose.setText((pubFragment.getPub().getHour().getHourClose() != null) ? pubFragment.getPub().getHour().getHourClose() : "");
-            bDelivery.setChecked(pubFragment.getPub().getDelivery());
-            d24Horas.setChecked(pubFragment.getPub().getHora24());
-            vWasap.setText((pubFragment.getPub().getSocial().getWasap() != null) ? pubFragment.getPub().getSocial().getWasap() : "");
-            dLatitude.setText(String.valueOf(pubFragment.getPub().getAddress().getCoord().getLatitude()));
-            dLongitude.setText(String.valueOf(pubFragment.getPub().getAddress().getCoord().getLongitud()));
-            photoPath = pubFragment.getvPhotoUrl();
-            Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
-            imageBitmap = scaleDown(imageBitmap, 1280, true);
-            imageBitmap = rotateBitmap(imageBitmap, photoPath);
-            FotoImage.setImageBitmap(imageBitmap);
-            storeBitmap(imageBitmap, photoPath);
-        }
-    }
-
-    private void showLoading() {
-        flayLoading.setVisibility(View.VISIBLE);
-    }
-
-    private void hideLoading() {
-        flayLoading.setVisibility(View.GONE);
-    }
-
-    @Override
-    public boolean onKey(View view, int i, KeyEvent keyEvent) {
-        pubEntity.setName(vName.getText().toString());
-        AddressEntity adrress = new AddressEntity();
-        CoordenatesEntity coord = new CoordenatesEntity();
-        coord.setLongitud(Latitude);
-        coord.setLatitude(Longitud);
-        adrress.setStreet(vAddres.getText().toString());
-        adrress.setCoord(coord);
-        pubEntity.setAddress(adrress);
-        HourEntity hourEntity = new HourEntity();
-        hourEntity.setHourOpen(tHourOpen.getText().toString());
-        hourEntity.setHourClose(tHourClose.getText().toString());
-        pubEntity.setHour(hourEntity);
-        pubEntity.setHora24(d24Horas.isChecked());
-        pubEntity.setDelivery(bDelivery.isChecked());
-        SocialEntity socialEntity = new SocialEntity();
-        socialEntity.setPhone(vPhone.getText().toString());
-        socialEntity.setWasap(vWasap.getText().toString());
-        pubEntity.setSocial(socialEntity);
-        pubEntity.setImage(photoPath);
-        pubEntity.setUserRegister("xxxxx");
-        pubFragment.setPub(pubEntity);
-        pubFragment.setvPhotoUrl(photoPath);
-        return false;
+        setListener();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // https://developer.android.com/reference/android/app/Activity.html#isFinishing()
-        // isFinishing.- verifica si el activity esta en el proceso de finalizacion. podria ser por que se esta llamando a finish()
-        // comunmente, este metodo se usa en el onPause() para determinar si es solo una pausa o si el app se va a cerrar completamente.
         if (isFinishing()) {
-            //si el usuario esta cerrando el app, ya no necesitaremos mas el fragment asi que lo removemos.
             FragmentManager fm = getSupportFragmentManager();
             fm.beginTransaction().remove(pubFragment).commit();
         }
@@ -229,27 +143,21 @@ public class InsertPubActivity extends BaseActivity implements View.OnKeyListene
     @Override
     protected void onResume() {
         super.onResume();
-        dLatitude.setText(String.valueOf(Latitude));
-        dLongitude.setText(String.valueOf(Longitud));
-        CoordenatesEntity coord = new CoordenatesEntity();
-        coord.setLatitude(Latitude);
-        coord.setLongitud(Longitud);
-        AddressEntity ad = new AddressEntity();
-        ad.setCoord(coord);
-        pubEntity.setAddress(ad);
+        setCoord();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        dLatitude.setText(String.valueOf(Latitude));
-        dLongitude.setText(String.valueOf(Longitud));
-        CoordenatesEntity coord = new CoordenatesEntity();
-        coord.setLatitude(Latitude);
-        coord.setLongitud(Longitud);
-        AddressEntity ad = new AddressEntity();
-        ad.setCoord(coord);
-        pubEntity.setAddress(ad);
+        setCoord();
+    }
+
+
+    @Override
+    public boolean onKey(View view, int i, KeyEvent keyEvent) {
+        pubFragment.setPub(setData());
+        pubFragment.setvPhotoUrl(photoPath);
+        return false;
     }
 
     @Override
@@ -286,96 +194,80 @@ public class InsertPubActivity extends BaseActivity implements View.OnKeyListene
                 takePicture(view);
                 break;
             case R.id.vMap:
-                startActivity(new Intent(InsertPubActivity.this, MapsSearchActivity.class));
+                next(MapsSearchActivity.class, null, false);
                 break;
             case R.id.btnRegisterBar:
-                if (Util.checkConnection(mContext)) {
-                    if (!vName.getText().toString().isEmpty()) {
-                        if (!vAddres.getText().toString().isEmpty()) {
-                            if (Latitude != 0.0d) {
-                                if (Longitud != 0.0d) {
-                                    if (!vPhone.getText().toString().isEmpty()) {
-                                        if (!tHourOpen.getText().toString().isEmpty()) {
-                                            if (!tHourClose.getText().toString().isEmpty()) {
-                                                if (!TextUtils.isEmpty(photoPath)) {
-                                                    PubEntity newPubEntity = new PubEntity();
-                                                    newPubEntity.setName(vName.getText().toString());
-                                                    AddressEntity adrress = new AddressEntity();
-                                                    CoordenatesEntity coord = new CoordenatesEntity();
-                                                    coord.setLongitud(Latitude);
-                                                    coord.setLatitude(Longitud);
-                                                    adrress.setCoord(coord);
-                                                    adrress.setStreet(vAddres.getText().toString());
-                                                    newPubEntity.setAddress(adrress);
-                                                    HourEntity hourEntity = new HourEntity();
-                                                    hourEntity.setHourOpen(tHourOpen.getText().toString());
-                                                    hourEntity.setHourClose(tHourClose.getText().toString());
-                                                    newPubEntity.setHour(hourEntity);
-                                                    newPubEntity.setHora24(d24Horas.isChecked());
-                                                    newPubEntity.setDelivery(bDelivery.isChecked());
-                                                    SocialEntity socialEntity = new SocialEntity();
-                                                    socialEntity.setPhone(vPhone.getText().toString());
-                                                    socialEntity.setWasap(vWasap.getText().toString());
-                                                    newPubEntity.setSocial(socialEntity);
-                                                    newPubEntity.setImage(photoPath);
-                                                    newPubEntity.setUserRegister("xxxxx");
-                                                    uploadImage(newPubEntity);
-                                                } else {
-                                                    SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.string_message_to_attach_file));
-                                                }
-                                            } else {
-                                                SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.vtHourClose));
-                                            }
-                                        } else {
-                                            SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.vtHourOpen));
-                                        }
-                                    } else {
-                                        SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.vvPhone));
-                                    }
-                                } else {
-                                    SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.vLongitud));
-                                }
-                            } else {
-                                SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.vLatitude));
-                            }
-                        } else {
-                            SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.vvAddres));
-                        }
-                    } else {
-                        SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.vvName));
-                    }
-                } else {
-                    SnackBarHelper.showWarningMessage(view, mContext, getString(R.string.string_internet_connection_warning));
-                }
+                if (validatePub()) uploadImage();
                 break;
         }
     }
 
-    private void uploadImage(PubEntity pubEntity) {
-        showLoading();
+    private boolean validatePub() {
+        if (!Util.checkConnection(mContext)) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.string_internet_connection_warning));
+            return false;
+        }
+        if (vName.getText().toString().isEmpty()) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.vvName));
+            return false;
+        }
+        if (vAddres.getText().toString().isEmpty()) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.vvAddres));
+            return false;
+        }
+        if (Latitude == 0.0d) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.vLatitude));
+            return false;
+        }
+        if (Longitud == 0.0d) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.vLongitud));
+            return false;
+        }
+        if (vPhone.getText().toString().isEmpty()) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.vvPhone));
+            return false;
+        }
+        if (tHourOpen.getText().toString().isEmpty()) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.vtHourOpen));
+            return false;
+        }
+        if (tHourClose.getText().toString().isEmpty()) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.vtHourClose));
+            return false;
+        }
+        if (TextUtils.isEmpty(photoPath)) {
+            SnackBarHelper.showWarningMessage(parentView, mContext, getString(R.string.string_message_to_attach_file));
+            return false;
+        }
+        return true;
+    }
+
+    private void uploadImage() {
+        loading(flayLoading, true);
         File file = new File(photoPath);
         if (file.exists()) {
-            ProgressRequestBody fileBody = new ProgressRequestBody(file, percentage -> Log.v(TAG_INSERT_PUB_ACTIVITY, "Porcentaje: " + percentage));
+            ProgressRequestBody fileBody = new ProgressRequestBody(file, percentage ->
+                    Log.v(TAG_INSERT_PUB_ACTIVITY, "Percentage :" + percentage)
+            );
             MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), fileBody);
-            Call<PubRaw> request = ApiClass.getRetrofit().create(RouterApi.class).InsertPub(filePart, pubEntity);
-            request.enqueue(new Callback<PubRaw>() {
+            Call<PubEntityRaw> request = ApiClass.getRetrofit().create(RouterApi.class).insertPub(filePart, setData());
+            request.enqueue(new Callback<PubEntityRaw>() {
                 @Override
-                public void onResponse(Call<PubRaw> call, Response<PubRaw> response) {
-                    hideLoading();
-                    if (response.isSuccessful()) {
-                        Log.e(TAG_INSERT_PUB_ACTIVITY, "Se Registro Correctamente");
+                public void onResponse(Call<PubEntityRaw> call, Response<PubEntityRaw> response) {
+                    loading(flayLoading, false);
 
-                    } else {
+                    if (response.isSuccessful())
+                        Log.e(TAG_INSERT_PUB_ACTIVITY, "Se Registro Correctamente");
+                    else
                         Log.e(TAG_INSERT_PUB_ACTIVITY, "Error: Ocurrio algun problema");
-                    }
+
                     next(PubsActivity.class, null, true);
                 }
 
                 @Override
-                public void onFailure(Call<PubRaw> call, Throwable t) {
-                    hideLoading();
+                public void onFailure(Call<PubEntityRaw> call, Throwable t) {
+                    loading(flayLoading, false);
                     Log.e(TAG_INSERT_PUB_ACTIVITY, "Error: " + t.getMessage());
-                    t.printStackTrace();
                     next(PubsActivity.class, null, true);
                 }
             });
@@ -463,45 +355,14 @@ public class InsertPubActivity extends BaseActivity implements View.OnKeyListene
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            //INICIANDO EL SERVICIO PARA SUBIR LA IMAGEN
-            // Guardar la imagen miniatura de la foto.
-            //Bundle extras = data.getExtras();
-            //Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-            //Obtener la imagen grande de la foto.
-            //Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
-            //ivPhoto.setImageBitmap(imageBitmap);
-
             //Reducir de tamaño y calidad la foto grande.
             Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
-            imageBitmap = scaleDown(imageBitmap, 1280, true);
             imageBitmap = rotateBitmap(imageBitmap, photoPath);
+            imageBitmap = scaleDown(imageBitmap, 1280, true);
 
             FotoImage.setImageBitmap(imageBitmap);
             storeBitmap(imageBitmap, photoPath);
-
-            pubEntity.setName(vName.getText().toString());
-            AddressEntity adrress = new AddressEntity();
-            CoordenatesEntity coord = new CoordenatesEntity();
-            coord.setLongitud(Latitude);
-            coord.setLatitude(Longitud);
-            adrress.setStreet(vAddres.getText().toString());
-            adrress.setCoord(coord);
-            pubEntity.setAddress(adrress);
-            HourEntity hourEntity = new HourEntity();
-            hourEntity.setHourOpen(tHourOpen.getText().toString());
-            hourEntity.setHourClose(tHourClose.getText().toString());
-            pubEntity.setHour(hourEntity);
-            pubEntity.setHora24(d24Horas.isChecked());
-            pubEntity.setDelivery(bDelivery.isChecked());
-            SocialEntity socialEntity = new SocialEntity();
-            socialEntity.setPhone(vPhone.getText().toString());
-            socialEntity.setWasap(vWasap.getText().toString());
-            pubEntity.setSocial(socialEntity);
-            pubEntity.setImage(photoPath);
-            pubEntity.setUserRegister("xxxx");
-            pubFragment.setPub(pubEntity);
+            pubFragment.setPub(setData());
             pubFragment.setvPhotoUrl(photoPath);
         }
         if (requestCode == REQUEST_IMAGE_SELECTED && resultCode == RESULT_OK) {
@@ -511,34 +372,12 @@ public class InsertPubActivity extends BaseActivity implements View.OnKeyListene
                 Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 imageBitmap = scaleDown(imageBitmap, 1280, true);
                 imageBitmap = rotateBitmap(imageBitmap, photoPath);
-
                 FotoImage.setImageBitmap(imageBitmap);
                 storeBitmap(imageBitmap, photoPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            pubEntity.setName(vName.getText().toString());
-            AddressEntity adrress = new AddressEntity();
-            CoordenatesEntity coord = new CoordenatesEntity();
-            coord.setLongitud(Latitude);
-            coord.setLatitude(Longitud);
-            adrress.setStreet(vAddres.getText().toString());
-            adrress.setCoord(coord);
-            pubEntity.setAddress(adrress);
-            HourEntity hourEntity = new HourEntity();
-            hourEntity.setHourOpen(tHourOpen.getText().toString());
-            hourEntity.setHourClose(tHourClose.getText().toString());
-            pubEntity.setHour(hourEntity);
-            pubEntity.setHora24(d24Horas.isChecked());
-            pubEntity.setDelivery(bDelivery.isChecked());
-            SocialEntity socialEntity = new SocialEntity();
-            socialEntity.setPhone(vPhone.getText().toString());
-            socialEntity.setWasap(vWasap.getText().toString());
-            pubEntity.setSocial(socialEntity);
-            pubEntity.setImage(photoPath);
-            pubEntity.setUserRegister("xxxx");
-            pubFragment.setPub(pubEntity);
+            pubFragment.setPub(setData());
             pubFragment.setvPhotoUrl(photoPath);
         }
     }
@@ -588,4 +427,83 @@ public class InsertPubActivity extends BaseActivity implements View.OnKeyListene
         return realPath;
     }
 
+    private void setListener() {
+        vName.setOnKeyListener(this);
+        vAddres.setOnKeyListener(this);
+        vPhone.setOnKeyListener(this);
+        tHourOpen.setOnKeyListener(this);
+        tHourClose.setOnKeyListener(this);
+        bDelivery.setOnKeyListener(this);
+        d24Horas.setOnKeyListener(this);
+        vWasap.setOnKeyListener(this);
+        dLatitude.setOnKeyListener(this);
+        dLongitude.setOnKeyListener(this);
+        openHourImageView.setOnClickListener(this);
+        closeHourImageView.setOnClickListener(this);
+        vMap.setOnClickListener(this);
+        vPicture.setOnClickListener(this);
+        btnRegisterBar.setOnClickListener(this);
+    }
+
+    private void validateFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        pubFragment = (PubFragment) fm.findFragmentByTag(TAG_RETAINED_FRAGMENT);
+        if (pubFragment == null) {
+            pubFragment = new PubFragment();
+            fm.beginTransaction().add(pubFragment, TAG_RETAINED_FRAGMENT).commit();
+        } else {
+            vName.setText((pubFragment.getPub().getName() != null) ? pubFragment.getPub().getName() : "");
+            vAddres.setText((pubFragment.getPub().getAddress().getStreet() != null) ? pubFragment.getPub().getAddress().getStreet() : "");
+            vPhone.setText((pubFragment.getPub().getSocial().getPhone() != null) ? pubFragment.getPub().getSocial().getPhone() : "");
+            tHourOpen.setText((pubFragment.getPub().getHour().getHourOpen() != null) ? pubFragment.getPub().getHour().getHourOpen() : "");
+            tHourClose.setText((pubFragment.getPub().getHour().getHourClose() != null) ? pubFragment.getPub().getHour().getHourClose() : "");
+            bDelivery.setChecked(pubFragment.getPub().getDelivery());
+            d24Horas.setChecked(pubFragment.getPub().getHora24());
+            vWasap.setText((pubFragment.getPub().getSocial().getWasap() != null) ? pubFragment.getPub().getSocial().getWasap() : "");
+            dLatitude.setText(String.valueOf(pubFragment.getPub().getAddress().getCoord().getLatitude()));
+            dLongitude.setText(String.valueOf(pubFragment.getPub().getAddress().getCoord().getLongitud()));
+            photoPath = pubFragment.getvPhotoUrl();
+            Bitmap imageBitmap = BitmapFactory.decodeFile(photoPath);
+            imageBitmap = scaleDown(imageBitmap, 1280, true);
+            imageBitmap = rotateBitmap(imageBitmap, photoPath);
+            FotoImage.setImageBitmap(imageBitmap);
+            storeBitmap(imageBitmap, photoPath);
+        }
+    }
+
+    private PubEntity setData() {
+        CoordenatesEntity coord = new CoordenatesEntity();
+        coord.setLatitude(Latitude);
+        coord.setLongitud(Longitud);
+        AddressEntity adrress = new AddressEntity();
+        adrress.setCoord(coord);
+        adrress.setStreet(vAddres.getText().toString());
+        HourEntity hourEntity = new HourEntity();
+        hourEntity.setHourOpen(tHourOpen.getText().toString());
+        hourEntity.setHourClose(tHourClose.getText().toString());
+        SocialEntity socialEntity = new SocialEntity();
+        socialEntity.setPhone(vPhone.getText().toString());
+        socialEntity.setWasap(vWasap.getText().toString());
+        PubEntity entity = new PubEntity();
+        entity.setAddress(adrress);
+        entity.setHour(hourEntity);
+        entity.setSocial(socialEntity);
+        entity.setName(vName.getText().toString());
+        entity.setHora24(d24Horas.isChecked());
+        entity.setDelivery(bDelivery.isChecked());
+        entity.setImage(photoPath);
+        entity.setUserRegister(getIDSession(mContext));
+        return entity;
+    }
+
+    private void setCoord() {
+        dLatitude.setText(String.valueOf(Latitude));
+        dLongitude.setText(String.valueOf(Longitud));
+        CoordenatesEntity coord = new CoordenatesEntity();
+        coord.setLatitude(Latitude);
+        coord.setLongitud(Longitud);
+        AddressEntity ad = new AddressEntity();
+        ad.setCoord(coord);
+        pubEntity.setAddress(ad);
+    }
 }

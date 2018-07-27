@@ -1,6 +1,6 @@
 package com.benites.jeral.router_bar.storage.network.entity;
 
-public class BaseRaw {
+public abstract class BaseRaw {
 
     private String message;
 

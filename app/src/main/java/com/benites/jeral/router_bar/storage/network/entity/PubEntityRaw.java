@@ -3,18 +3,16 @@ package com.benites.jeral.router_bar.storage.network.entity;
 import com.benites.jeral.router_bar.model.PubEntity;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
-public class PubRaw extends BaseRaw {
+public class PubEntityRaw extends BaseRaw {
 
     @SerializedName("data")
-    private List<PubEntity> pubEntity;
+    private PubEntity pubEntity;
 
-    public List<PubEntity> getPubEntity() {
+    public PubEntity getPubEntity() {
         return pubEntity;
     }
 
-    public void setPubEntity(List<PubEntity> pubEntity) {
+    public void setPubEntity(PubEntity pubEntity) {
         this.pubEntity = pubEntity;
     }
 }

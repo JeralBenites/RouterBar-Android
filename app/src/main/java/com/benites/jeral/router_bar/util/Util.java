@@ -3,7 +3,10 @@ package com.benites.jeral.router_bar.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -11,19 +14,28 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 
 import com.benites.jeral.router_bar.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
-import static com.benites.jeral.router_bar.util.Constants.*;
+import static com.benites.jeral.router_bar.util.Constants.KEY_REQUESTING_LOCATION_UPDATES;
+import static com.benites.jeral.router_bar.util.Constants.REQUEST_PLAY_SERVICES;
 
 /**
  * Creado por Jeral Benites el dia 01/10/2017 papu.
@@ -45,6 +57,16 @@ public class Util {
         }
     }
 
+    /**
+     * le baja el tamaño a la imagen.
+     */
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
+        float ratio = Math.min(maxImageSize / realImage.getWidth(), maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
+
+        return Bitmap.createScaledBitmap(realImage, width, height, filter);
+    }
     public static boolean gpsEstaActivo(Context context) {
         int locationMode;
         String locationProviders;
@@ -136,46 +158,50 @@ public class Util {
     }
 
 
-    /*public static void SetMapTime(Context ctx, GoogleMap mMap, ImageView imageView) {
+    public static void SetMapTime(Context ctx, GoogleMap mMap, @Nullable ImageView imageView) {
         Date dt = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
         int hours = c.get(Calendar.HOUR_OF_DAY);
         if (hours >= 5 && hours <= 12) {
             if (imageView != null) {
-                Bitmap bImage = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.skymor);
-                imageView.setImageBitmap(bImage);
+                byte[] decodedString = Base64.decode("images/skymor.jpg", Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                imageView.setImageBitmap(decodedByte);
             }
             mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             ctx, R.raw.mapstyleday));
         } else if (hours >= 12 && hours <= 17) {
             if (imageView != null) {
-                Bitmap bImage = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.skyaft);
-                imageView.setImageBitmap(bImage);
+                byte[] decodedString = Base64.decode("images/skyaft.jpg", Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                imageView.setImageBitmap(decodedByte);
             }
             mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             ctx, R.raw.mapstyleday));
         } else if (hours >= 17 && hours <= 24) {
             if (imageView != null) {
-                Bitmap bImage = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.skynight);
-                imageView.setImageBitmap(bImage);
+                byte[] decodedString = Base64.decode("images/skynight.jpg", Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                imageView.setImageBitmap(decodedByte);
             }
             mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             ctx, R.raw.mapstylenight));
         } else if (hours >= 0 && hours <= 5) {
             if (imageView != null) {
-                Bitmap bImage = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.skynight);
-                imageView.setImageBitmap(bImage);
+                byte[] decodedString = Base64.decode("images/skynight.jpg", Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                imageView.setImageBitmap(decodedByte);
             }
             mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             ctx, R.raw.mapstylenight));
         }
     }
-*/
+
 
     public static void PopUPLocationPermission(Context context) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(context)
@@ -190,4 +216,14 @@ public class Util {
         dialog.show();
     }
 
+    public static Bitmap getBitmapFromAssets(String fileName, Context Context) {
+        AssetManager assetManager = Context.getAssets();
+        InputStream istr = null;
+        try {
+            istr = assetManager.open(fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return BitmapFactory.decodeStream(istr);
+    }
 }

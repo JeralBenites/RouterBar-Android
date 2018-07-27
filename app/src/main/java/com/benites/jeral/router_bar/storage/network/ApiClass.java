@@ -7,6 +7,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.benites.jeral.router_bar.util.Constants.GOOGLEDIRECTION_API_BASE;
+
 public class ApiClass {
 
     private static Retrofit retrofit;
@@ -27,7 +29,7 @@ public class ApiClass {
         return retrofit;
     }
 
-    /*public static Retrofit getRetrofitRoute() {
+    public static Retrofit getRetrofitRoute() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
@@ -39,5 +41,5 @@ public class ApiClass {
                     .build();
         }
         return retrofitRoute;
-    }*/
+    }
 }

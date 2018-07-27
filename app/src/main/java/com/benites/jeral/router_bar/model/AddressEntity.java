@@ -1,5 +1,6 @@
 package com.benites.jeral.router_bar.model;
 
+
 public class AddressEntity {
     private String street;
     private CoordenatesEntity coord;

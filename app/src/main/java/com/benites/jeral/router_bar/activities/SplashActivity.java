@@ -1,21 +1,18 @@
 package com.benites.jeral.router_bar.activities;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.benites.jeral.router_bar.R;
-import com.benites.jeral.router_bar.model.PubEntity;
 import com.benites.jeral.router_bar.storage.preferences.PreferencesHelper;
-import com.wang.avi.AVLoadingIndicatorView;
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
+
+import static com.benites.jeral.router_bar.util.Util.getBitmapFromAssets;
 
 public class SplashActivity extends BaseActivity {
 
@@ -27,6 +24,7 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        Fabric.with(this, new Crashlytics());
         ui();
         asyncTask();
     }
@@ -35,6 +33,8 @@ public class SplashActivity extends BaseActivity {
         logoImageView = findViewById(R.id.logoImageView);
         loadingIndicatorView = findViewById(R.id.loadingIndicatorView);
         loadingTextView = findViewById(R.id.loadingTextView);
+
+        logoImageView.setImageBitmap(getBitmapFromAssets("images/logo.png", this));
     }
 
     private void asyncTask() {
@@ -52,9 +52,9 @@ public class SplashActivity extends BaseActivity {
         @Override
         protected Integer doInBackground(Void... voids) {
             if (PreferencesHelper.isSignedIn(SplashActivity.this))
-                code = 1;
+                code = Integer.parseInt(PreferencesHelper.getStateSession(SplashActivity.this));
             else
-                code = 2;
+                code = 0;
             return code;
         }
 
@@ -65,11 +65,10 @@ public class SplashActivity extends BaseActivity {
                     next(PubsActivity.class, null, true);
                     break;
                 case 2:
-                    next(LoginActivity.class, null, true);
+                    next(MainMapsActivity.class, null, true);
                     break;
-                case 4:
-                    //toggle();
-                    //showMessage(getString(R.string.Error));
+                default:
+                    next(LoginActivity.class, null, true);
                     break;
             }
         }

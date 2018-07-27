@@ -25,6 +25,7 @@ public class Constants {
     public static final String TAG_LOGIN_ACTIVITY = LoginActivity.class.getSimpleName();
     public static final String TAG_MAIN_MAP_ACTIVITY = SplashActivity.class.getSimpleName();
     public static final String TAG_INSERT_PUB_ACTIVITY = InsertPubActivity.class.getSimpleName();
+    public static final String TAG_RETAINED_FRAGMENT = "PubFragment";
 
     public static final String BAR_ID = "barId";
     public static final String RESPONSE_UPLOAD = "barLatLng";

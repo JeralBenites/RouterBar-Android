@@ -26,6 +26,7 @@
                 android:orientation="vertical">
 
                 <EditText
+                    android:selectAllOnFocus="false"
                     android:id="@+id/vName"
                     style="@style/LoginSignUp1Input"
                     android:hint="@string/vBarName"
