@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -48,9 +49,11 @@ public class PubAdapter extends RecyclerView.Adapter<PubAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         PubEntity pubEntity = pubEntities.get(position);
-        byte[] decodedString = Base64.decode(pubEntity.getImage(), Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        holder.anImageView.setImageBitmap(decodedByte);
+        /*Bitmap bitmap = ImageBase64.decodeBase64(pubEntity.getImage(),context);
+        holder.anImageView.setImageBitmap(bitmap);
+        bitmap = null;
+        System.gc();*/
+        //holder.anImageView.setImageBitmap(getResizedBitmap(decodeArray(pubEntity.getImage()),100,100));
         holder.pubNameTextView.setText(pubEntity.getName());
         holder.pubPhoneTextView.setText(pubEntity.getSocial().getPhone());
         holder.pubAddressTextView.setText(pubEntity.getAddress().getStreet());
@@ -93,4 +96,59 @@ public class PubAdapter extends RecyclerView.Adapter<PubAdapter.ViewHolder> {
         }
     }
 
+
+    private Bitmap decodeArray(String image) {
+        byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+        BitmapFactory.Options options = new BitmapFactory.Options();// Create object of bitmapfactory's option method for further option use
+        options.inPurgeable = true; // inPurgeable is used to free up memory while required
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length, options);//Decode image, "thumbnail" is the object of image file
+    }
+
+    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            if (width > height) {
+                inSampleSize = Math.round((float) height / (float) reqHeight);
+            } else {
+                inSampleSize = Math.round((float) width / (float) reqWidth);
+            }
+        }
+        return inSampleSize;
+    }
+
+    public Bitmap decodeSampledBitmapFromPath(String path, int reqWidth, int reqHeight) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth,
+                reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        Bitmap bmp = BitmapFactory.decodeFile(path, options);
+        return bmp;
+    }
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+// "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height,
+                matrix, false);
+        return resizedBitmap;
+    }
 }

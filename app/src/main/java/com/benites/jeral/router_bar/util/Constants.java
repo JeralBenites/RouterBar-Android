@@ -60,7 +60,7 @@ public class Constants {
     public static final int REQUEST_IMAGE_SELECTED = 2;
     public static final int REQUEST_PERMISSIONS = 300;
     public static final boolean WRAPINSCROOLVIEW = true;
-    public static final float MRADIOUS = 550.00f;
+    public static final Double MRADIOUS = 400d;
     static final String KEY_REQUESTING_LOCATION_UPDATES = "requesting_locaction_updates";
 
 }

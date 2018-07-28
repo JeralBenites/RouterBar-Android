@@ -8,11 +8,11 @@ import android.widget.TextView;
 
 import com.benites.jeral.router_bar.R;
 import com.benites.jeral.router_bar.storage.preferences.PreferencesHelper;
-import com.crashlytics.android.Crashlytics;
-
-import io.fabric.sdk.android.Fabric;
 
 import static com.benites.jeral.router_bar.util.Util.getBitmapFromAssets;
+
+//import com.crashlytics.android.Crashlytics;
+//import io.fabric.sdk.android.Fabric;
 
 public class SplashActivity extends BaseActivity {
 
@@ -24,7 +24,7 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        Fabric.with(this, new Crashlytics());
+        //  Fabric.with(this, new Crashlytics());
         ui();
         asyncTask();
     }

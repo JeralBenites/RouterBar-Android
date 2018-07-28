@@ -3,7 +3,10 @@ package com.benites.jeral.router_bar.model;
 
 public class AddressEntity {
     private String street;
-    private CoordenatesEntity coord;
+
+    private CoordenatesEntity loc;
+
+    private Double radius;
 
     public String getStreet() {
         return street;
@@ -13,11 +16,19 @@ public class AddressEntity {
         this.street = street;
     }
 
-    public CoordenatesEntity getCoord() {
-        return coord;
+    public CoordenatesEntity getLoc() {
+        return loc;
     }
 
-    public void setCoord(CoordenatesEntity coord) {
-        this.coord = coord;
+    public void setLoc(CoordenatesEntity loc) {
+        this.loc = loc;
+    }
+
+    public Double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(Double radius) {
+        this.radius = radius;
     }
 }

@@ -42,4 +42,7 @@ public interface RouterApi {
             @Query(value = "destination", encoded = true) String destination,
             @Query("sensor") String sensor,
             @Query("mode") String mode);
+
+    @POST("pubs/getByCoordenates")
+    Call<PubListRaw> listPubsByCoordenates(@Body PubEntity pubEntity);
 }

@@ -27,6 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.benites.jeral.router_bar.R;
+import com.benites.jeral.router_bar.model.AddressEntity;
+import com.benites.jeral.router_bar.model.CoordenatesEntity;
 import com.benites.jeral.router_bar.model.PubEntity;
 import com.benites.jeral.router_bar.storage.network.ApiClass;
 import com.benites.jeral.router_bar.storage.network.RouterApi;
@@ -94,8 +96,8 @@ public class MainMapsActivity extends BaseActivity implements
     private Marker mCurrentLocationMarker;
     private LocationRequest mSolicitadorLocalizacion;
     private LocationSettingsRequest.Builder settingsApiBuilder;
-    private int iCantBares = 0;
     private List<PubEntity> pubEntities = new ArrayList<>();
+    private PubEntity pubEntity;
     private LocationCallback myLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult result) {
@@ -207,18 +209,18 @@ public class MainMapsActivity extends BaseActivity implements
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_NORMAL));
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(origin)
-                        .zoom(15.6f)
+                        .zoom(16.0f)
                         .bearing(90)
                         .tilt(60)
                         .build();
                 mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                GetBars();
             } else {
                 mCurrentLocationMarker.setPosition(origin);
             }
             mMap.setBuildingsEnabled(true);
         }
         SetMapTime(getApplicationContext(), mMap, null);
-        GetBars();
     }
 
 
@@ -257,67 +259,65 @@ public class MainMapsActivity extends BaseActivity implements
         });
     }
 
-    private void GetBars() {
-        mMap.clear();
-        int x = pubEntities.size();
-        if (iCantBares == 0 || iCantBares != pubEntities.size()) {
-            Call<PubListRaw> listCall = ApiClass.getRetrofit().create(RouterApi.class).listPubs();
-            listCall.enqueue(new Callback<PubListRaw>() {
-                @Override
-                public void onResponse(@NonNull Call<PubListRaw> call, @NonNull Response<PubListRaw> response) {
-                    if (response.isSuccessful()) {
-                        if (response.body() != null) {
-                            if (origin != null) {
-                                pubEntities = response.body().getPubEntity();
-                                iCantBares = pubEntities.size();
-                                MarkerOptions markerOptions = new MarkerOptions();
-                                markerOptions.position(origin);
-                                markerOptions.title(getString(R.string.vCurrentPosition));
-                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                                mMap.addMarker(markerOptions);
-                                mMap.addCircle(new CircleOptions()
-                                        .center(origin)
-                                        .radius(MRADIOUS)
-                                        .strokeWidth(2)
-                                        .strokeColor(Color.CYAN)
-                                        .fillColor(Color.TRANSPARENT));
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<PubListRaw> call, @NonNull Throwable t) {
-                    Toast.makeText(MainMapsActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
-                }
-            });
+    private PubEntity setLtng() {
+        if (mUltimaLocalizacion != null) {
+            CoordenatesEntity coordenatesEntity = new CoordenatesEntity();
+            Double[] array = new Double[2];
+            array[1] = mUltimaLocalizacion.getLatitude();
+            array[0] = mUltimaLocalizacion.getLongitude();
+            coordenatesEntity.setCoordinates(array);
+            AddressEntity addressEntity = new AddressEntity();
+            addressEntity.setLoc(coordenatesEntity);
+            addressEntity.setRadius(.004d);
+            pubEntity = new PubEntity();
+            pubEntity.setAddress(addressEntity);
         } else {
-            if (origin != null) {
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(origin);
-                markerOptions.title(getString(R.string.vCurrentPosition));
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                mMap.addMarker(markerOptions);
-                mMap.addCircle(new CircleOptions()
-                        .center(origin)
-                        .radius(MRADIOUS)
-                        .strokeWidth(2)
-                        .strokeColor(Color.CYAN)
-                        .fillColor(Color.TRANSPARENT));
-            }
+            pubEntity = new PubEntity();
         }
-        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.beerpin);
-        for (PubEntity e : pubEntities) {
-            if (getDistance(origin, e.getAddress().getCoord().getLatitude(), e.getAddress().getCoord().getLongitud()) <= MRADIOUS) {
-                MarkerOptions marker1 = new MarkerOptions()
-                        .position(new LatLng(e.getAddress().getCoord().getLatitude(), e.getAddress().getCoord().getLongitud()))
-                        .title(e.getName())
-                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapdraw.getBitmap(), 80, 100, false)));
-                mMap.addMarker(marker1).setTag(e);
-            }
-        }
+        return pubEntity;
     }
 
+    private void GetBars() {
+        mMap.clear();
+        Call<PubListRaw> listCall = ApiClass.getRetrofit().create(RouterApi.class).listPubsByCoordenates(setLtng());
+        listCall.enqueue(new Callback<PubListRaw>() {
+            @Override
+            public void onResponse(@NonNull Call<PubListRaw> call, @NonNull Response<PubListRaw> response) {
+                if (response.isSuccessful()) {
+                    pubEntities = response.body().getPubEntity();
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(origin);
+                    markerOptions.title(getString(R.string.vCurrentPosition));
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    mMap.addMarker(markerOptions);
+                    mMap.addCircle(new CircleOptions()
+                            .center(origin)
+                            .radius(MRADIOUS)
+                            .strokeWidth(2)
+                            .strokeColor(Color.CYAN)
+                            .fillColor(Color.TRANSPARENT));
+                    setNearPubs(pubEntities);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PubListRaw> call, @NonNull Throwable t) {
+                Toast.makeText(MainMapsActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setNearPubs(List<PubEntity> nearPubs) {
+        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(R.drawable.beerpin);
+        for (PubEntity e : nearPubs) {
+            MarkerOptions marker1 = new MarkerOptions()
+                    .position(new LatLng(e.getAddress().getLoc().getCoordinates()[1], e.getAddress().getLoc().getCoordinates()[0]))
+                    .title(e.getName())
+                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapdraw.getBitmap(), 80, 100, false)));
+            mMap.addMarker(marker1).setTag(e);
+        }
+
+    }
 
     private void StartTracker() throws SecurityException {
         if (mGoogleApiClient != null)
@@ -339,7 +339,6 @@ public class MainMapsActivity extends BaseActivity implements
     public void onConnected(@Nullable Bundle bundle) {
         ShowLocation();
         CreateLocationRequest();
-
     }
 
     @Override
@@ -351,7 +350,6 @@ public class MainMapsActivity extends BaseActivity implements
             case 2:
                 Toast.makeText(MainMapsActivity.this, "El Dispositivo perdio la Conexion", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
@@ -361,24 +359,13 @@ public class MainMapsActivity extends BaseActivity implements
 
     @Override
     public void onLocationChanged(Location location) {
-
+        GetBars();
     }
 
     @Override
     public boolean onMyLocationButtonClick() {
         ShowLocation();
         return false;
-    }
-
-
-    public float getDistance(LatLng Origin, double DestinyLat, double DestinyLng) {
-        Location myLocation = new Location("");
-        myLocation.setLatitude(Origin.latitude);
-        myLocation.setLongitude(Origin.longitude);
-        Location l1 = new Location("");
-        l1.setLatitude(DestinyLat);
-        l1.setLongitude(DestinyLng);
-        return l1.distanceTo(myLocation);
     }
 
     public void onBackPressed() {
@@ -391,21 +378,11 @@ public class MainMapsActivity extends BaseActivity implements
                     }
                     signOut(this);
                     next(LoginActivity.class, null, true);
-
                 })
                 .setNegativeButton(R.string.vCancelar, (dialogInterface, i) -> dialogInterface.dismiss())
                 .setCancelable(true);
         dialog.create();
         dialog.show();
-    }
-
-    private PubEntity check(List<PubEntity> userList, final String targetName) {
-        for (PubEntity o : userList) {
-            if (o != null && o.getName().equals(targetName)) {
-                return o;
-            }
-        }
-        return null;
     }
 
     private boolean CallPopUp(PubEntity pubEntity) {
@@ -446,8 +423,8 @@ public class MainMapsActivity extends BaseActivity implements
             });
             gpsBar.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
-                bundle.putDouble(LATITUDE, pubEntity.getAddress().getCoord().getLatitude());
-                bundle.putDouble(LONGITUDE, pubEntity.getAddress().getCoord().getLongitud());
+                bundle.putDouble(LATITUDE, pubEntity.getAddress().getLoc().getCoordinates()[0]);
+                bundle.putDouble(LONGITUDE, pubEntity.getAddress().getLoc().getCoordinates()[1]);
                 bundle.putString(BAR_NAME, pubEntity.getName());
                 next(MapsRouteActivity.class, bundle, false);
             });
@@ -487,5 +464,4 @@ public class MainMapsActivity extends BaseActivity implements
             }
         }
     }
-
 }

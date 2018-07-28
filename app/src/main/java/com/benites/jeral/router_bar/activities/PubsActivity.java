@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -30,6 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.benites.jeral.router_bar.storage.preferences.PreferencesHelper.getUserSession;
+import static com.benites.jeral.router_bar.storage.preferences.PreferencesHelper.signOut;
 import static com.benites.jeral.router_bar.util.Constants.BAR_NAME;
 import static com.benites.jeral.router_bar.util.Constants.LATITUDE;
 import static com.benites.jeral.router_bar.util.Constants.LONGITUDE;
@@ -67,10 +69,10 @@ public class PubsActivity extends BaseActivity
         @Override
         public void onGoGps(int position) {
             Bundle bundle = new Bundle();
-            bundle.putDouble(LATITUDE, pubEntities.get(position).getAddress().getCoord().getLatitude());
-            bundle.putDouble(LONGITUDE, pubEntities.get(position).getAddress().getCoord().getLongitud());
+            bundle.putDouble(LATITUDE, pubEntities.get(position).getAddress().getLoc().getCoordinates()[1]);
+            bundle.putDouble(LONGITUDE, pubEntities.get(position).getAddress().getLoc().getCoordinates()[0]);
             bundle.putString(BAR_NAME, pubEntities.get(position).getName());
-            next(MapsRouteActivity.class, bundle, true);
+            next(MapsRouteActivity.class, bundle, false);
         }
     };
 
@@ -90,10 +92,6 @@ public class PubsActivity extends BaseActivity
                 R.color.Cyan);
         swipeLayout.setOnRefreshListener(this);
         this.setTitle(getUserSession(mContext));
-    }
-
-    @Override
-    public void onBackPressed() {
     }
 
     private void loadData() {
@@ -120,6 +118,21 @@ public class PubsActivity extends BaseActivity
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                .setMessage(R.string.vTextLogaout)
+                .setTitle(R.string.vCerrarSession)
+                .setPositiveButton(R.string.vAceptar, (dialogInterface, i) -> {
+                    signOut(this);
+                    next(LoginActivity.class, null, true);
+
+                })
+                .setNegativeButton(R.string.vCancelar, (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(true);
+        dialog.create();
+        dialog.show();
+    }
     @Override
     public void onRefresh() {
         Call<PubListRaw> pubRawCall = ApiClass.getRetrofit().create(RouterApi.class).listPubs();

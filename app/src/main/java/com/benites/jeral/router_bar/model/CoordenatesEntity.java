@@ -1,22 +1,23 @@
 package com.benites.jeral.router_bar.model;
 
 public class CoordenatesEntity {
-    private Double latitude;
-    private Double longitud;
 
-    public Double getLatitude() {
-        return latitude;
+    private String type;
+    private Double[] coordinates;
+
+    public String getType() {
+        return type;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public Double getLongitud() {
-        return longitud;
+    public Double[] getCoordinates() {
+        return coordinates;
     }
 
-    public void setLongitud(Double longitud) {
-        this.longitud = longitud;
+    public void setCoordinates(Double[] coordinates) {
+        this.coordinates = coordinates;
     }
 }
