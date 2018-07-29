@@ -21,6 +21,14 @@
         <item name="android:background">@android:color/black</item>
     </style>
 
+    <style name="uifour">
+        <item name="colorAccent">@color/three</item>
+        <item name="colorControlNormal">@color/three</item>
+        <item name="colorControlActivated">@color/three</item>
+        <item name="colorControlHighlight">@color/three</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <!--Style Input-->
     <style name="EditTextInput">
         <item name="android:layout_width">match_parent</item>

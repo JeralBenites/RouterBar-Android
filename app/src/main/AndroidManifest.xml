@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.SplashActivity"
+            android:name="pe.com.dev420.router_bar.activities.SplashActivity"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,15 +35,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.MapsSearchActivity"
+            android:name="pe.com.dev420.router_bar.activities.MapsSearchActivity"
             android:label="@string/title_activity_maps_search">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.benites.jeral.router_bar.activities.InsertPubActivity" />
+                android:value="pe.com.dev420.router_bar.activities.InsertPubActivity" />
         </activity>
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.InsertPubActivity" />
-        <activity android:name=".activities.PubsActivity" />
+        <activity android:name="pe.com.dev420.router_bar.activities.LoginActivity" />
+        <activity android:name="pe.com.dev420.router_bar.activities.InsertPubActivity" />
+        <activity android:name="pe.com.dev420.router_bar.activities.PubsActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -74,14 +74,14 @@
             android:resource="@xml/searchable" />
 
         <activity
-            android:name=".activities.MapsRouteActivity"
+            android:name="pe.com.dev420.router_bar.activities.MapsRouteActivity"
             android:label="@string/title_activity_maps_route">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.benites.jeral.router_bar.activities.PubsActivity" />
+                android:value="pe.com.dev420.router_bar.activities.PubsActivity" />
         </activity>
         <activity
-            android:name=".activities.MainMapsActivity"
+            android:name="pe.com.dev420.router_bar.activities.MainMapsActivity"
             android:label="@string/title_activity_main_maps" />
     </application>
 

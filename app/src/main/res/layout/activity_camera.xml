@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/fragCamera"
-        android:name="com.benites.jeral.router_bar.fragments.CameraFragment"
+        android:name="pe.com.dev420.router_bar.fragments.CameraFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>

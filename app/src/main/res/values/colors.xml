@@ -10,6 +10,8 @@
     <color name="loginSignup1colorAccent">#fe5824</color>
     <color name="button_blue">#40579b</color>
     <color name="BackgroundCardGray">#83e1e1e1</color>
+    <color name="activity9ChatBackground">#f1f5f8</color>
+    <color name="three">#EC407A</color>
 
     <!--Mensaje Color -->
     <color name="color_msj_error">#ec1f23</color>
